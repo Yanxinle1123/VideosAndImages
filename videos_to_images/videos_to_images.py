@@ -1,4 +1,14 @@
+import time
+
 import cv2
+
+
+def is_camera(video_source):
+    video_capture = cv2.VideoCapture(video_source)
+    frame_count = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+    video_capture.release()
+
+    return frame_count <= 0
 
 
 def save_image(image, addr, name, suffix='.png'):
@@ -14,6 +24,9 @@ class VideosToImages:
 
     def convert(self, frame_interval_ms=1000):
         video_capture = cv2.VideoCapture(self._video_source)
+        is_cam = is_camera(self._video_source)
+        if is_cam:
+            time.sleep(2)
 
         # 获取视频的帧率
         fps = int(video_capture.get(cv2.CAP_PROP_FPS))
