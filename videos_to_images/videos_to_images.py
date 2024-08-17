@@ -3,6 +3,7 @@ import time
 import cv2
 
 
+# 判断是否连接到摄像头
 def is_camera(video_source):
     video_capture = cv2.VideoCapture(video_source)
     frame_count = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -11,6 +12,7 @@ def is_camera(video_source):
     return frame_count <= 0
 
 
+# 保存图片
 def save_image(image, addr, name, suffix='.png'):
     address = addr + str(name) + suffix
     cv2.imwrite(address, image)
