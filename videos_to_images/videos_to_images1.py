@@ -1,47 +1,46 @@
-import os
-
 import cv2
+from tqdm import tqdm
 
 video_path = "../videos/paddy.mp4"
 save_path = "save_images/"
 
-'''
-定义保存图片函数
-image: 要保存的图片名字
-addr: 图片地址与相片名字的前部分
-num: 图片名字的后缀
-'''
 
-
-def save_image(image, addr, num):
-    address = addr + str(num) + '.png'
+def save_image(image, addr, name, suffix='.png'):
+    address = addr + str(name) + suffix
     cv2.imwrite(address, image)
 
 
-# 读取视频文件 视频文件路径
 videoCapture = cv2.VideoCapture(video_path)
 
-# 读帧
-success, frame = videoCapture.read()
-i = 0
-j = 0
+# 获取视频的帧率
+fps = int(videoCapture.get(cv2.CAP_PROP_FPS))
 
-# 设置每帧的时间间隔
+# 设置帧间隔
 frame_interval_ms = 1000
 
-while success:
-    i += 1
-    save_image(frame, save_path, j)  # 保存当前帧
-    print('save image:', i)
-    j += 1
+# 计算每隔 frame_interval_ms 毫秒应该跳过的帧数
+skip_frames = fps * frame_interval_ms // 1000
 
-    # 等待指定的时间间隔
-    key = cv2.waitKey(frame_interval_ms)  # 等待指定的毫秒数
-    if key == 27:  # 按 'Esc' 键退出
-        break
+i = 0
+j = 1
 
-    success, frame = videoCapture.read()
+# 计算视频的总帧数
+total_frames = int(videoCapture.get(cv2.CAP_PROP_FRAME_COUNT))
 
-# 释放视频捕获对象
+# 使用 tqdm 创建进度条
+with tqdm(total=total_frames, ascii=True, ncols=100,
+          bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{remaining}]') as progress_bar:
+    while videoCapture.isOpened():
+        success, frame = videoCapture.read()
+        if not success:
+            break
+
+        if i % skip_frames == 0:
+            save_image(frame, save_path, j)
+            j += 1
+
+        progress_bar.update(1)
+        i += 1
+
 videoCapture.release()
 cv2.destroyAllWindows()
