@@ -7,18 +7,13 @@ def save_image(image, addr, name, suffix='.png'):
 
 
 class VideosToImages:
-    def __init__(self, video_source, save_path, type_='video', suffix='.png'):
+    def __init__(self, video_source, save_path, suffix='.png'):
         self._video_source = video_source
         self._save_path = save_path
-        self._type = type_
         self._suffix = suffix
 
     def convert(self, frame_interval_ms=1000):
-        video_capture = None
-        if self._type == 'streaming':
-            video_capture = cv2.VideoCapture(int(self._video_source))
-        elif self._type == 'video':
-            video_capture = cv2.VideoCapture(self._video_source)
+        video_capture = cv2.VideoCapture(self._video_source)
 
         # 获取视频的帧率
         fps = int(video_capture.get(cv2.CAP_PROP_FPS))
@@ -44,8 +39,8 @@ class VideosToImages:
 
 
 if __name__ == '__main__':
-    video_path = '../videos/paddy.mp4'
-    save_path = 'save_images/paddy_images/'
+    video_path = 'https://img.tukuppt.com/video_show/2475824/00/01/84/5b4b1d6d2b582.mp4'
+    save_path = 'save_images/fallen_leaves2_images/'
 
-    vti = VideosToImages(video_source=video_path, save_path=save_path, type_='video', suffix='.png')
+    vti = VideosToImages(video_source=video_path, save_path=save_path, suffix='.png')
     vti.convert(frame_interval_ms=1000)
